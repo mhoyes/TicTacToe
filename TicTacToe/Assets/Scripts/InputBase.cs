@@ -1,3 +1,4 @@
+using System;
 using TicTacToe.Attributes;
 using TicTacToe.Enums;
 using TicTacToe.Interfaces;
@@ -7,32 +8,40 @@ namespace TicTacToe
 {
     public abstract class InputBase : MonoBehaviour, IPlayerInput
     {
+        public static Action<GridCell> PlayerInputReceived;
+        public bool InputEnabled => inputEnabled;
         public PlayerType PlayerType => playerType;
         public GridCellType CellType => _cellType;
-        public GameBoard GameBoard => board;
-
-        protected GameBoard board; 
+        public GameBoard GameBoard => GameController.Instance.GameBoard;
 
         [SerializeField]
         protected PlayerType playerType; 
         
-        [ReadOnly, SerializeField]
+        [ReadOnly]
+        [SerializeField]
         protected GridCellType _cellType = GridCellType.NONE;
 
-        private void Awake()
+        protected bool inputEnabled;
+
+        protected virtual void Start()
         {
-            board = GetComponentInParent<GameController>().GameBoard;
+            DisableInput();
         }
 
         public virtual void Initialize(GridCellType cellType)
         {
             _cellType = cellType;
-            DisableInput();
         }
 
-        public abstract void EnableInput();
+        public virtual void EnableInput()
+        {
+            inputEnabled = true;
+        }
 
-        public abstract void DisableInput();
+        public virtual void DisableInput()
+        {
+            inputEnabled = false;
+        }
 
         public bool IsPlayerControlled()
         {

@@ -1,15 +1,32 @@
+using UnityEngine;
+
 namespace TicTacToe
 {
     public class PlayerInput : InputBase
     {
         public override void EnableInput()
         {
-            board.EnableCellInteractabilty();
+            base.EnableInput();
+            GameBoard.OnCellClicked += OnCellClicked;
+            GameBoard.EnableCellInteractabilty();
         }
 
         public override void DisableInput()
         {
-            board.DisableCellInteractabilty();
+            base.DisableInput();
+            GameBoard.OnCellClicked -= OnCellClicked;
+            GameBoard.DisableCellInteractabilty();
+        }
+
+        private void OnCellClicked(GridCell cell)
+        {
+            if (!inputEnabled)
+            {
+                Debug.LogError("Attempted to play turn that wasn't yours");
+                return;
+            }
+
+            PlayerInputReceived?.Invoke(cell);
         }
     }
 }

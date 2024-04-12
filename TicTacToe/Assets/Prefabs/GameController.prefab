@@ -139,6 +139,7 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   playerType: 2
   _cellType: 0
+  logicConfig: {fileID: 11400000, guid: 9e534890706f7684baf4dea527887880, type: 2}
 --- !u!1 &8338152450259952193
 GameObject:
   m_ObjectHideFlags: 0

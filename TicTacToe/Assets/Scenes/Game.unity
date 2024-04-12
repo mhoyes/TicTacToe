@@ -1026,6 +1026,10 @@ PrefabInstance:
       propertyPath: board
       value: 
       objectReference: {fileID: 1636813255}
+    - target: {fileID: 8338152449112044401, guid: 3924bd312d700694bb6ce48a6f974652, type: 3}
+      propertyPath: decisionTime
+      value: 0.5
+      objectReference: {fileID: 0}
     - target: {fileID: 8338152450407087765, guid: 3924bd312d700694bb6ce48a6f974652, type: 3}
       propertyPath: board
       value: 

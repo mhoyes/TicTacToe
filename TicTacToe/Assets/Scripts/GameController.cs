@@ -9,10 +9,15 @@ namespace TicTacToe
 {
     public class GameController : MonoBehaviour
     {
-        public GameBoard GameBoard => board;
+        public static GameController Instance => instance;
+
+        // Creating a simple singleton
+        private static GameController instance;
         
-        public static Action<PlayerType?> OnGameEnded;
+        public GameBoard GameBoard => board;
+
         public static Action<StateChangedData> OnStateChanged;
+        public static Action<PlayerType?> OnGameEnded;
 
         [SerializeField] private GameBoard board;
         [SerializeField] private bool isSinglePlayer = true;
@@ -22,16 +27,55 @@ namespace TicTacToe
         
         private GameState currentGamestate;
         private IPlayerInput currentPlayer = null;
-        
+
+        private void Awake()
+        {
+            if (instance != null && instance != this)
+            {
+                Destroy(gameObject);
+            }
+            else
+            {
+                instance = this;
+                DontDestroyOnLoad(gameObject);
+            }
+            
+            board = FindObjectOfType<GameBoard>();
+        }
+
         private async void Start()
         {
-            SetGameState(GameState.GameStart);
-            board.Initialize(OnGridCellClicked);
+            Initialize();
+        }
 
+        private void OnDestroy()
+        {
+            UnregisterEvents();
+        }
+
+        public async void Initialize()
+        {
+            SetGameState(GameState.GameStart);
+            board = FindObjectOfType<GameBoard>();
+            GameBoard.Initialize();
+
+            RegisterEvents();
+
+            // Simulate a 2 second wait
             await Task.Delay(2000);
 
             InitializePlayers();
             DetermineFirstPlayer();
+        }
+
+        private void RegisterEvents()
+        {
+            InputBase.PlayerInputReceived += PlayerInputReceived;
+        }
+
+        private void UnregisterEvents()
+        {
+            InputBase.PlayerInputReceived -= PlayerInputReceived;
         }
 
         private void DetermineFirstPlayer()
@@ -69,7 +113,7 @@ namespace TicTacToe
             return isSinglePlayer ? (IPlayerInput)aiInput : player2Input;
         }
 
-        private void OnGridCellClicked(GridCell cell)
+        private void PlayerInputReceived(GridCell cell)
         {
             if (!cell.IsEmpty)
             {
@@ -145,6 +189,13 @@ namespace TicTacToe
                 state = state,
                 playerTurn = currentPlayer?.PlayerType
             });
+        }
+        
+        public void SetModeData(bool singlePlayer, AiLogicType aiLogicType)
+        {
+            isSinglePlayer = singlePlayer;
+            aiInput.LoadAiLogicFromConfig = false;
+            aiInput.LogicType = aiLogicType;
         }
     }
 }

@@ -92,12 +92,15 @@ public class GameResultPopup : MonoBehaviour
     private void PlayAgain()
     {
         playAgainButton.interactable = false;
-        ReloadCurrentScene();
+        GoToMainMenu();
     }
 
-    private void ReloadCurrentScene()
+    private void GoToMainMenu()
     {
-        SceneManager.LoadScene(SceneManager.GetActiveScene().name);
+        SceneManager.LoadSceneAsync("Menu", LoadSceneMode.Single).completed += (operation) =>
+        {
+            Destroy(GameController.Instance.gameObject);
+        };
     }
 
     private IEnumerator WaitForAnimation(Action onAnimComplete = null)

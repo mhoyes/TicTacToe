@@ -9,6 +9,12 @@ namespace TicTacToe
 {
     public class GameBoard : MonoBehaviour
     {
+        public static Action<GridCell> OnCellClicked;
+
+        public List<GridCell> Cells => cells;
+        public int BoardWidth => boardSize_X;
+        public int BoardHeight=> boardSize_Y;
+        
         [SerializeField] private int boardSize_X = 3;
         [SerializeField] private int boardSize_Y = 3;
         [SerializeField] private Transform grid;
@@ -18,24 +24,25 @@ namespace TicTacToe
 
         private GridCellType currentCellType;
         private List<GridCell> cells;
-        private Action<GridCell> onCellClicked;
 
-        public void Initialize(Action<GridCell> cellClicked = null)
+        public void Initialize()
         {
             cells = new List<GridCell>();
-            onCellClicked = cellClicked;
             GenerateCells();
         }
 
         private void GenerateCells()
         {
             grid.transform.ClearChildren();
-
-            for (int i = 0; i < boardSize_X * boardSize_Y; i++)
+            
+            for (int y = 0; y < boardSize_Y; y++)
             {
-                GridCell cell = Instantiate(gridCellPrefab, grid.transform);
-                cell.Initialize(i / boardSize_X, i % boardSize_Y, OnGridCellClicked);
-                cells.Add(cell);
+                for (int x = 0; x < boardSize_X; x++)
+                {
+                    GridCell cell = Instantiate(gridCellPrefab, grid.transform);
+                    cell.Initialize(x, y, OnGridCellClicked);
+                    cells.Add(cell);
+                }
             }
         }
 
@@ -51,7 +58,7 @@ namespace TicTacToe
 
         private void OnGridCellClicked(GridCell cell)
         {
-            onCellClicked?.Invoke(cell);
+            OnCellClicked?.Invoke(cell);
         }
 
         public bool HasEmptyCells()
@@ -59,7 +66,7 @@ namespace TicTacToe
             return cells.Any(cell => cell.IsEmpty);
         }
 
-        private GridCell GetCell(int x, int y)
+        public GridCell GetCell(int x, int y)
         {
             if (x < 0 || x >= boardSize_X || y < 0 || y >= boardSize_Y)
             {
