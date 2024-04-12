@@ -21,6 +21,9 @@ namespace TicTacToe
         [SerializeField] private CanvasGroup canvasGroup;
 
         [SerializeField] private GridCell gridCellPrefab;
+        [SerializeField] private List<GameObject> diagonalWinLines;
+        [SerializeField] private List<GameObject> verticalWinLines;
+        [SerializeField] private List<GameObject> horizontalWinLines;
 
         private GridCellType currentCellType;
         private List<GridCell> cells;
@@ -28,6 +31,7 @@ namespace TicTacToe
         public void Initialize()
         {
             cells = new List<GridCell>();
+            ClearWinLines();
             GenerateCells();
         }
 
@@ -85,6 +89,7 @@ namespace TicTacToe
                 GetCell(1, 1).CellType == GetCell(2, 2).CellType &&
                 !GetCell(2, 2).IsEmpty)
             {
+                diagonalWinLines[0].SetActive(true);
                 return GetCell(2, 2).CellType;
             }
             
@@ -93,6 +98,7 @@ namespace TicTacToe
                      GetCell(1, 1).CellType == GetCell(2, 0).CellType &&
                      !GetCell(2, 0).IsEmpty)
             {
+                diagonalWinLines[1].SetActive(true);
                 return GetCell(2, 0).CellType;
             }
             
@@ -103,6 +109,7 @@ namespace TicTacToe
                     GetCell(x, 1).CellType == GetCell(x, 2).CellType &&
                     !GetCell(x, 2).IsEmpty)
                 {
+                    verticalWinLines[x].SetActive(true);
                     return GetCell(x, 0).CellType;
                 }
             }
@@ -114,12 +121,29 @@ namespace TicTacToe
                     GetCell(1, y).CellType == GetCell(2, y).CellType &&
                     !GetCell(2, y).IsEmpty)
                 {
+                    horizontalWinLines[y].SetActive(true);
                     return GetCell(2, y).CellType;
                 }
             }
             
             // No Winner 
             return GridCellType.NONE;
+        }
+
+        private void ClearWinLines()
+        {
+            foreach (var line in diagonalWinLines)
+            {
+                line.SetActive(false);
+            }
+            foreach (var line in verticalWinLines)
+            {
+                line.SetActive(false);
+            }
+            foreach (var line in horizontalWinLines)
+            {
+                line.SetActive(false);
+            }
         }
     }
 }
